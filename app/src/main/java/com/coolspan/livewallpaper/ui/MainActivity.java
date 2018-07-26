@@ -4,9 +4,11 @@ import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.coolspan.livewallpaper.R;
 import com.coolspan.livewallpaper.util.WallpaperUtil;
@@ -24,6 +26,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_SET_WALLPAPER = 0x001;
+    private final static int REQUEST_CODE_SELECT_SYSTEM_WALLPAPER = 0x002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +41,14 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void onSetWallpaperForResource(View view) {
+//        WallpaperManager manager =(WallpaperManager)getSystemService(WALLPAPER_SERVICE);
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
         try {
             wallpaperManager.setResource(R.raw.wallpaper);
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            //WallpaperManager.FLAG_LOCK  WallpaperManager.FLAG_SYSTEM
-//                wallpaperManager.setResource(R.raw.wallpaper, WallpaperManager.FLAG_SYSTEM);
-//            }
+////                WallpaperManager.FLAG_LOCK WallpaperManager.FLAG_SYSTEM
+////                wallpaperManager.setResource(R.raw.wallpaper, WallpaperManager.FLAG_SYSTEM);
+////            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             Bitmap wallpaperBitmap = BitmapFactory.decodeResource(getResources(), R.raw.girl);
             wallpaperManager.setBitmap(wallpaperBitmap);
+
+            // 已过时的Api
 //            setWallpaper(wallpaperBitmap);
 //            setWallpaper(getResources().openRawResource(R.raw.girl));
         } catch (IOException e) {
@@ -78,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
         try {
             wallpaperManager.clear();
+
+            // 已过时的Api
 //            clearWallpaper();
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,9 +102,27 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_SET_WALLPAPER) {
             if (resultCode == RESULT_OK) {
                 // TODO: 2017/3/13 设置动态壁纸成功
+                Toast.makeText(this, "设置动态壁纸成功", Toast.LENGTH_SHORT).show();
             } else {
                 // TODO: 2017/3/13 取消设置动态壁纸
+                Toast.makeText(this, "取消设置动态壁纸", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_CODE_SELECT_SYSTEM_WALLPAPER) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "设置系统壁纸成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "取消设置系统壁纸", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * 选择系统壁纸
+     *
+     * @param view
+     */
+    public void onSelectSystemWallpaper(View view) {
+        Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
+        startActivityForResult(Intent.createChooser(intent, "选择壁纸"), REQUEST_CODE_SELECT_SYSTEM_WALLPAPER);
     }
 }
